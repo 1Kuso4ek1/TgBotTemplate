@@ -4,5 +4,6 @@ int main()
 {
     Application app;
     app.setupCommands();
+    app.loadData();
     app.run();
 }

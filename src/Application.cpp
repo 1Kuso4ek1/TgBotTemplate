@@ -12,6 +12,18 @@ void Application::setupCommands()
         bot.getEvents().onCommand(command, func);
 }
 
+void Application::loadData()
+{
+    try
+    {
+        picInputFile = TgBot::InputFile::fromFile(dataPath / picName, picMime);
+    }
+    catch(const std::exception& e)
+    {
+        std::println("Error loading data from \"{}\": {}", (dataPath / picName).string(), e.what());
+    }
+}
+
 void Application::run() const
 {
     try
@@ -31,4 +43,9 @@ void Application::run() const
 void Application::handleStart(const TgBot::Message::Ptr& message) const
 {
     bot.getApi().sendMessage(message->chat->id, "Hello World!");
+}
+
+void Application::handlePic(const TgBot::Message::Ptr& message) const
+{
+    bot.getApi().sendPhoto(message->chat->id, picInputFile, "Here's your picture!");
 }

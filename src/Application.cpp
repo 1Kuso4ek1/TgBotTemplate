@@ -44,12 +44,11 @@ void Application::loadData()
     }
 }
 
-void Application::run() const
+void Application::run()
 {
     try
     {
         std::println("Bot name: {}", bot.getApi().getMe()->firstName);
-        TgBot::TgLongPoll longPoll(bot);
 
         while(true)
             longPoll.start();

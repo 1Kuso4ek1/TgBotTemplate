@@ -15,7 +15,7 @@ public:
     void setupKeyboards();
     void loadData();
 
-    void run() const;
+    void run();
 
 private: // Keyboards setup
     void setupReplyKeyboards();

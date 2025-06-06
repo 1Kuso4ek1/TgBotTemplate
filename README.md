@@ -1,3 +1,3 @@
-# TelegramBot
+# TgBotTemplate
 
-This is a test project I'm making using tgbot-cpp
+This is a template project for telegram bot api with tgbot-cpp

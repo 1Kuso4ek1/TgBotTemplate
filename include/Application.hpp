@@ -10,12 +10,16 @@ class Application
 public:
     Application();
 
+    void run();
+
+private: // Handling messages and commands
+    void handleAny(const TgBot::Message::Ptr& message) const;
+    void handleStart(const TgBot::Message::Ptr& message) const;
+
+private: // Initial bot setup
     void setupCommands();
     void setupCallbackQueries();
     void setupKeyboards();
-    void loadData();
-
-    void run();
 
 private: // Keyboards setup
     void setupReplyKeyboards();
@@ -30,44 +34,19 @@ private: // Keyboards setup
         const TgBot::InlineKeyboardMarkup::Ptr& keyboard
     );
 
-private: // Handling messages and commands
-    void handleAny(const TgBot::Message::Ptr& message) const;
-    void handleStart(const TgBot::Message::Ptr& message) const;
-    void handlePic(const TgBot::Message::Ptr& message) const;
-
-private:
-    void handleNextPicture(const TgBot::CallbackQuery::Ptr& query) const;
-
 private: // Class members
     TgBot::Bot bot;
     TgBot::TgLongPoll longPoll;
 
-    std::filesystem::path dataPath;
-
-    const std::string picName = "ptitsa.png";
-    const std::string picMime = "image/png";
-
-    TgBot::InputFile::Ptr picInputFile;
-
 private: // Mapping callbacks
     std::unordered_map<std::string, TgBot::EventBroadcaster::MessageListener> commands =
     {
-        { "start", [&](const auto& message) { handleStart(message); } },
-        { "pic", [&](const auto& message) { handlePic(message); } }
+        { "start", [&](const auto& message) { handleStart(message); } }
     };
 
-    std::unordered_map<std::string, TgBot::EventBroadcaster::CallbackQueryListener> callbacks =
-    {
-        { "Next picture", [&](const auto& query) { handleNextPicture(query); } }
-    };
+    std::unordered_map<std::string, TgBot::EventBroadcaster::CallbackQueryListener> callbacks{};
 
-    std::unordered_map<std::string, TgBot::ReplyKeyboardMarkup::Ptr> replyKeyboards =
-    {
-        { "menu", std::make_shared<TgBot::ReplyKeyboardMarkup>() }
-    };
+    std::unordered_map<std::string, TgBot::ReplyKeyboardMarkup::Ptr> replyKeyboards{};
 
-    std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr> inlineKeyboards =
-    {
-        { "pic", std::make_shared<TgBot::InlineKeyboardMarkup>() }
-    };
+    std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr> inlineKeyboards{};
 };

@@ -3,8 +3,46 @@
 #include <print>
 
 Application::Application()
-    : bot(getenv("TOKEN")), longPoll(bot), dataPath("../data")
-{}
+    : bot(getenv("TOKEN")), longPoll(bot)
+{
+    setupCommands();
+    setupCallbackQueries();
+    setupKeyboards();
+}
+
+void Application::run()
+{
+    try
+    {
+        std::println("Bot name: {}", bot.getApi().getMe()->firstName);
+
+        while(true)
+            longPoll.start();
+    }
+    catch(TgBot::TgException& e)
+    {
+        std::println("Exception: {}", e.what());
+    }
+}
+
+void Application::handleAny(const TgBot::Message::Ptr& message) const
+{
+    if(message->text.front() == '/')
+        return;
+
+    bot.getApi().sendMessage(
+        message->chat->id, message->text, {}, {},
+        replyKeyboards.at("menu"), "Markdown"
+    );
+}
+
+void Application::handleStart(const TgBot::Message::Ptr& message) const
+{
+    bot.getApi().sendMessage(
+        message->chat->id, "Hello World!", {}, {},
+        replyKeyboards.at("menu"), "Markdown"
+    );
+}
 
 void Application::setupCommands()
 {
@@ -30,33 +68,6 @@ void Application::setupKeyboards()
 {
     setupReplyKeyboards();
     setupInlineKeyboards();
-}
-
-void Application::loadData()
-{
-    try
-    {
-        picInputFile = TgBot::InputFile::fromFile(dataPath / picName, picMime);
-    }
-    catch(const std::exception& e)
-    {
-        std::println("Error loading data from \"{}\": {}", (dataPath / picName).string(), e.what());
-    }
-}
-
-void Application::run()
-{
-    try
-    {
-        std::println("Bot name: {}", bot.getApi().getMe()->firstName);
-
-        while(true)
-            longPoll.start();
-    }
-    catch(TgBot::TgException& e)
-    {
-        std::println("Exception: {}", e.what());
-    }
 }
 
 void Application::setupReplyKeyboards()
@@ -101,39 +112,4 @@ void Application::createInlineKeyboard(
 
         keyboard->inlineKeyboard.push_back(row);
     }
-}
-
-void Application::handleAny(const TgBot::Message::Ptr& message) const
-{
-    if(message->text.front() == '/')
-        return;
-
-    bot.getApi().sendMessage(
-        message->chat->id, message->text, {}, {},
-        replyKeyboards.at("menu"), "Markdown"
-    );
-}
-
-void Application::handleStart(const TgBot::Message::Ptr& message) const
-{
-    bot.getApi().sendMessage(
-        message->chat->id, "Hello World!", {}, {},
-        replyKeyboards.at("menu"), "Markdown"
-    );
-}
-
-void Application::handlePic(const TgBot::Message::Ptr& message) const
-{
-    bot.getApi().sendPhoto(
-        message->chat->id, picInputFile, "Here's your picture!", {},
-        inlineKeyboards.at("pic"), "Markdown"
-    );
-}
-
-void Application::handleNextPicture(const TgBot::CallbackQuery::Ptr& query) const
-{
-    bot.getApi().sendPhoto(
-        query->message->chat->id, picInputFile, "Here's another picture!", {},
-        inlineKeyboards.at("pic"), "Markdown"
-    );
 }

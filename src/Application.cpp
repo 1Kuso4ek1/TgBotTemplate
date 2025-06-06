@@ -31,16 +31,14 @@ void Application::handleAny(const TgBot::Message::Ptr& message) const
         return;
 
     bot.getApi().sendMessage(
-        message->chat->id, message->text, {}, {},
-        replyKeyboards.at("menu"), "Markdown"
+        message->chat->id, message->text, {}, {}, {}, "Markdown"
     );
 }
 
 void Application::handleStart(const TgBot::Message::Ptr& message) const
 {
     bot.getApi().sendMessage(
-        message->chat->id, "Hello World!", {}, {},
-        replyKeyboards.at("menu"), "Markdown"
+        message->chat->id, "Hello World!", {}, {}, {}, "Markdown"
     );
 }
 
@@ -70,15 +68,9 @@ void Application::setupKeyboards()
     setupInlineKeyboards();
 }
 
-void Application::setupReplyKeyboards()
-{
-    createReplyKeyboard({ { "/start", "/pic" } }, replyKeyboards["menu"]);
-}
+void Application::setupReplyKeyboards() {}
 
-void Application::setupInlineKeyboards()
-{
-    createInlineKeyboard({ { "Next picture" } }, inlineKeyboards["pic"]);
-}
+void Application::setupInlineKeyboards() {}
 
 void Application::createReplyKeyboard(
     const std::vector<std::vector<std::string>>& layout,

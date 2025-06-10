@@ -3,7 +3,7 @@
 #include <print>
 
 Application::Application()
-    : bot(getenv("TOKEN")), longPoll(bot)
+    : bot(getenv("TOKEN")), longPoll(bot, 1, 30)
 {
     setupCommands();
     setupCallbackQueries();
@@ -19,9 +19,9 @@ void Application::run()
         while(true)
             longPoll.start();
     }
-    catch(TgBot::TgException& e)
+    catch(const TgBot::TgException& e)
     {
-        std::println("Exception: {}", e.what());
+        std::println("Exception in 'run': {}", e.what());
     }
 }
 
@@ -30,16 +30,30 @@ void Application::handleAny(const TgBot::Message::Ptr& message) const
     if(message->text.front() == '/')
         return;
 
-    bot.getApi().sendMessage(
-        message->chat->id, message->text, {}, {}, {}, "Markdown"
-    );
+    try
+    {
+        bot.getApi().sendMessage(
+           message->chat->id, message->text, {}, {}, {}, "Markdown"
+       );
+    }
+    catch(const TgBot::TgException& e)
+    {
+        std::println("Exception in 'handleAny': {}", e.what());
+    }
 }
 
 void Application::handleStart(const TgBot::Message::Ptr& message) const
 {
-    bot.getApi().sendMessage(
-        message->chat->id, "Hello World!", {}, {}, {}, "Markdown"
-    );
+    try
+    {
+        bot.getApi().sendMessage(
+           message->chat->id, "Hello World!", {}, {}, {}, "Markdown"
+       );
+    }
+    catch(const TgBot::TgException& e)
+    {
+        std::println("Exception in 'handleStart': {}", e.what());
+    }
 }
 
 void Application::setupCommands()

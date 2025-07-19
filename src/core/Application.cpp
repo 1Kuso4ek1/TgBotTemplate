@@ -8,7 +8,7 @@
 
 Application::Application()
     : bot(Env::token, httpClient),
-      longPoll(bot, 1, 30),
+      longPoll(bot),
       ui(bot)
 {
     startHandler = std::make_unique<StartHandler>(ui);

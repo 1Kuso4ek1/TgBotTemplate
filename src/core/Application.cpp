@@ -38,7 +38,7 @@ void Application::run()
 
 void Application::handleAny(const TgBot::Message::Ptr& message) const
 {
-    if(message->text.front() == '/')
+    if(!message->text.empty() && message->text.front() == '/')
         return;
 
     echoHandler->handle(message);

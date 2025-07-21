@@ -2,6 +2,8 @@
 #include <tgbot/Bot.h>
 #include <tgbot/net/TgLongPoll.h>
 
+#include <BS_thread_pool.hpp>
+
 #include "NoRetryHttpClient.hpp"
 
 #include "handlers/HandlerBase.hpp"
@@ -28,6 +30,8 @@ private: // Initial bot setup
 private: // Class members
     NoRetryHttpClient httpClient;
 
+    BS::thread_pool<> threadPool;
+
     TgBot::Bot bot;
     TgBot::TgLongPoll longPoll;
 
@@ -38,7 +42,7 @@ private: // Class members
 private: // Mapping callbacks
     std::unordered_map<std::string, TgBot::EventBroadcaster::MessageListener> commands =
     {
-        { "start", [&](const auto& message) { startHandler->handle(message); } }
+        { "start", [&](const auto& message) { threadPool.detach_task([this, message] { startHandler->handle(message); }); } }
     };
 
     std::unordered_map<std::string, TgBot::EventBroadcaster::CallbackQueryListener> callbacks{};
